@@ -175,11 +175,9 @@ export function usePriority() {
   };
 }
 
-export function useUnmappedVisitQueueEntries(locationUuid: string): UseVisitQueueEntries<VisitQueueEntry> {
-  const { queueLocations } = useQueueLocations();
-  const queueLocationUuid = locationUuid ? locationUuid : queueLocations[0]?.id;
+export function useUnmappedVisitQueueEntries(locationUuid?: string): UseVisitQueueEntries<VisitQueueEntry> {
 
-  const apiUrl = `/ws/rest/v1/visit-queue-entry?location=${queueLocationUuid}&v=full`;
+  const apiUrl = "/ws/rest/v1/visit-queue-entry?v=full" + (locationUuid? `&location=${locationUuid}` : "");
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: { results: Array<VisitQueueEntry> } }, Error>(
     apiUrl,
     openmrsFetch,

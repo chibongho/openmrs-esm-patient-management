@@ -30,15 +30,18 @@ import { type ConfigObject } from '../config-schema';
 import { useQueues } from '../helpers/useQueues';
 import { TableToolbarSearch } from '@carbon/react';
 import { type AllowedStatus, type QueueServiceInfo } from '../types';
+import { QueueTableName, QueueTablePriority, QueueTableStatus } from './queue-table-cells.component';
 
 export const QueueTableByStatus: React.FC = () => {
   const layout = useLayoutType();
   const currentUser = useSession();
   const { t } = useTranslation();
 
+  console.time("queue table");
+
   const currentLocationUuid = currentUser?.sessionLocation?.uuid;
   const { visitQueueEntries: visitQueueEntriesByLocation, isLoading } =
-    useUnmappedVisitQueueEntries(currentLocationUuid);
+    useUnmappedVisitQueueEntries();
   const currentQueueUuid = useSelectedServiceUuid();
   const { queues } = useQueues();
   const allQueueAllowedStatuses = useCallback(() => {
@@ -73,9 +76,10 @@ export const QueueTableByStatus: React.FC = () => {
   const noStatuses = !allowedStatuses?.length;
   if (isLoading) {
     return <>{t('loading', 'Loading....')}</>;
-  } else if (noStatuses) {
-    return <>{t('noStatusConfigured', 'No status configured')}</>;
   }
+  //  else if (noStatuses) {
+  //   return <>{t('noStatusConfigured', 'No status configured')}</>;
+  // }
 
   const handleServiceChange = ({ selectedItem }: { selectedItem: QueueServiceInfo }) => {
     updateSelectedServiceUuid(selectedItem.uuid);
@@ -106,6 +110,7 @@ export const QueueTableByStatus: React.FC = () => {
         className={styles.tabs}>
         <TabList style={{ paddingLeft: '1rem' }} aria-label={t('queueStatus', 'Queue Status')} contained>
           {allowedStatuses?.map((s) => <Tab key={s?.uuid}>{s?.display}</Tab>)}
+          {allowedStatuses?.length == 0 && <Tab>All</Tab>}
         </TabList>
         <TabPanels>
           {allowedStatuses?.map((s) => (
@@ -113,6 +118,11 @@ export const QueueTableByStatus: React.FC = () => {
               <QueueTable visitQueueEntriesByLocationAndQueueAndStatus={visitQueueEntriesByLocationAndQueueAndStatus} />
             </TabPanel>
           ))}
+          {allowedStatuses?.length == 0 && (
+            <TabPanel>
+              <QueueTable visitQueueEntriesByLocationAndQueueAndStatus={visitQueueEntriesByLocationAndQueueAndStatus} />
+            </TabPanel>
+          )}
         </TabPanels>
       </Tabs>
     </div>
@@ -139,7 +149,21 @@ function QueueTable({ visitQueueEntriesByLocationAndQueueAndStatus }: QueueTable
     paginatedQueueEntries?.map((queueEntry) => {
       const row: Record<string, JSX.Element> = {};
       queueTableColumns.forEach((conf) => {
-        row[conf.headerI18nKey] = <ExtensionSlot name={conf.extensionSlotName} state={{ queueEntry }} />;
+        switch(conf.headerI18nKey) {
+          case "name": {
+            row[conf.headerI18nKey] = <QueueTableName queueEntry={queueEntry} />
+            break;
+          }
+          case "priority": {
+            row[conf.headerI18nKey]= <QueueTablePriority queueEntry={queueEntry} />
+            break;
+          }
+          case "status": {
+            row[conf.headerI18nKey]= <QueueTableStatus queueEntry={queueEntry} />
+            break;
+          }
+        }
+        // row[conf.headerI18nKey] = <ExtensionSlot name={conf.extensionSlotName} state={{ queueEntry }} />;
       });
 
       return row;

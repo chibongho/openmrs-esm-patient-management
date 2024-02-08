@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { type VisitQueueEntry } from '../active-visits/active-visits-table.resource';
 import { ConfigurableLink, useConfig } from '@openmrs/esm-framework';
 import { type ConfigObject } from '../config-schema';
@@ -6,6 +6,8 @@ import { Tag } from '@carbon/react';
 
 export const QueueTableName = ({ queueEntry }: { queueEntry: VisitQueueEntry }) => {
   const { customPatientChartUrl } = useConfig<ConfigObject>();
+
+  useEffect(() => console.timeLog("queue table"), []);
   return (
     <ConfigurableLink to={customPatientChartUrl} templateParams={{ patientUuid: queueEntry.queueEntry.patient.uuid }}>
       {queueEntry.queueEntry.display}
@@ -14,9 +16,12 @@ export const QueueTableName = ({ queueEntry }: { queueEntry: VisitQueueEntry }) 
 };
 
 export const QueueTablePriority = ({ queueEntry }: { queueEntry: VisitQueueEntry }) => {
+  useEffect(() => console.timeLog("queue table"), []);
   return <Tag>{queueEntry.queueEntry.priority.display}</Tag>;
 };
 
 export const QueueTableStatus = ({ queueEntry }: { queueEntry: VisitQueueEntry }) => {
+  useEffect(() => console.timeLog("queue table"), []);
+
   return <>{queueEntry.queueEntry.status.display}</>;
 };
