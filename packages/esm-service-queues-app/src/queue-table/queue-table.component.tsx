@@ -72,9 +72,9 @@ export const QueueTableByStatus: React.FC = () => {
 
   const noStatuses = !allowedStatuses?.length;
   if (isLoading) {
-    return <>Loading....</>;
+    return <>{t('loading', 'Loading....')}</>;
   } else if (noStatuses) {
-    return <>No available statuses configured for queue</>;
+    return <>{t('noStatusConfigured', 'No status configured')}</>;
   }
 
   const handleServiceChange = ({ selectedItem }: { selectedItem: QueueServiceInfo }) => {
@@ -109,7 +109,7 @@ export const QueueTableByStatus: React.FC = () => {
         </TabList>
         <TabPanels>
           {allowedStatuses?.map((s) => (
-            <TabPanel key={s?.uuid} style={{ padding: 0 }}>
+            <TabPanel key={s.uuid} style={{ padding: 0 }}>
               <QueueTable visitQueueEntriesByLocationAndQueueAndStatus={visitQueueEntriesByLocationAndQueueAndStatus} />
             </TabPanel>
           ))}

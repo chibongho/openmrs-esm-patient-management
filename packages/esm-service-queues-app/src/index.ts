@@ -108,7 +108,7 @@ export const queueTablePriority = getAsyncLifecycle(
       default: QueueTablePriority,
     })),
   {
-    featureName: 'queue table name column',
+    featureName: 'queue table priority column',
     moduleName,
   },
 );
@@ -117,7 +117,7 @@ export const queueTableStatus = getAsyncLifecycle(
   () =>
     import('./queue-table/queue-table-cells.component').then(({ QueueTableStatus }) => ({ default: QueueTableStatus })),
   {
-    featureName: 'queue table name column',
+    featureName: 'queue table status column',
     moduleName,
   },
 );
