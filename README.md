@@ -2,6 +2,10 @@
 
 ![Node.js CI](https://github.com/openmrs/openmrs-esm-patient-management/actions/workflows/ci.yml/badge.svg)
 
+# Test 123
+![image](https://github.com/chibongho/openmrs-esm-patient-management/assets/509602/971be83f-2e4c-4f98-8004-01c399bedc7b)
+
+
 # OpenMRS Patient Management
 
 This repository contains frontend modules for the OpenMRS SPA. These modules relate to registering and editing patients, searching for existing patients, creating and managing patient lists, managing patient queues in an outpatient setting and creating, editing and managing patient appointments. The modules within this repository include:
