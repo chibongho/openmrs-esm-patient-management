@@ -1,8 +1,7 @@
-import { type FetchResponse, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
-import useSWR from 'swr';
-import { type PatientNote, type UsePatientNotes, type VisitEncountersFetchResponse } from './types';
+import { openmrsFetch, restBaseUrl, useServerInfinite } from '@openmrs/esm-framework';
+import { useEffect, useMemo } from 'react';
 import { type EncounterPayload } from '../../types';
-import { useMemo } from 'react';
+import { type RESTPatientNote, type PatientNote, type UsePatientNotes } from './types';
 
 export function savePatientNote(payload: EncounterPayload, abortController: AbortController = new AbortController()) {
   return openmrsFetch(`${restBaseUrl}/encounter`, {
@@ -29,15 +28,17 @@ export function usePatientNotes(
     'diagnoses';
   const encountersApiUrl = `${restBaseUrl}/encounter?patient=${patientUuid}&encounterType=${encounterType}&visit=${visitUuid}&v=${customRepresentation}`;
 
-  const { data, error, isLoading, isValidating, mutate } = useSWR<FetchResponse<VisitEncountersFetchResponse>, Error>(
+  const { data, error, isLoading, isValidating, mutate, hasMore, loadMore } = useServerInfinite<RESTPatientNote>(
     patientUuid && encounterType ? encountersApiUrl : null,
-    openmrsFetch,
   );
+  useEffect(() => {
+    hasMore && loadMore();
+  }, [hasMore]);
 
   const patientNotes: Array<PatientNote> | null = useMemo(
     () =>
       data
-        ? data.data.results
+        ? data
             .map((encounter) => {
               const noteObs = encounter.obs.find((obs) => obs.concept.uuid === conceptUuid);
 

@@ -11,6 +11,7 @@ export function createEncounter(encounterPayload: EncounterPayload) {
   });
 }
 
+// TODO: handle server-side pagination after BED-15
 export function assignPatientToBed(bedUuid: number, patientUuid: string, encounterUuid: string) {
   return openmrsFetch(`${restBaseUrl}/beds/${bedUuid}`, {
     method: 'POST',

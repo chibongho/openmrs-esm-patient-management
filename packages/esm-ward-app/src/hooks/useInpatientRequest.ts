@@ -1,8 +1,8 @@
-import { type FetchResponse, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
-import type { DispositionType, InpatientRequestFetchResponse } from '../types';
+import { type FetchResponse, openmrsFetch, restBaseUrl, useServerInfinite } from '@openmrs/esm-framework';
+import type { DispositionType, InpatientRequest, InpatientRequestFetchResponse } from '../types';
 import useSWR from 'swr';
 import useWardLocation from './useWardLocation';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 // prettier-ignore
 const defaultRep =
@@ -26,18 +26,14 @@ export function useInpatientRequest(
   searchParams.set('dispositionLocation', location?.uuid);
   searchParams.set('v', rep);
 
-  const { data, ...rest } = useSWR<FetchResponse<InpatientRequestFetchResponse>, Error>(
+  const { data, ...rest } = useServerInfinite<InpatientRequest>(
     location?.uuid ? `${restBaseUrl}/emrapi/inpatient/request?${searchParams.toString()}` : null,
     openmrsFetch,
   );
+  const { hasMore, loadMore } = rest;
+  useEffect(() => {
+    hasMore && loadMore();
+  }, [hasMore]);
 
-  const results = useMemo(
-    () => ({
-      inpatientRequests: data?.data?.results,
-      ...rest,
-    }),
-    [data, rest],
-  );
-
-  return results;
+  return { inpatientRequests: data, ...rest };
 }
